@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hyprice</title>
+  <style>
+    /* Base styling */
+    body { 
+      width: 320px; 
+      font-family: Arial, sans-serif; 
+      background-color: #072723; 
+      color: #ffffff;
+      padding: 0 10px 10px 10px; /* Top padding 0; sides and bottom 10px */
+      border-radius: 10px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+    }
+    /* Section headings */
+    h4 {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 10px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #1a3a34; /* Bright line under section titles */
+    }
+    /* Remove bottom margin for headings that need no gap */
+    h4.no-gap {
+      margin-bottom: 0;
+    }
+    /* Header: Logo and icons */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    .header-logo {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Space between icons */
+    }
+    .notifications-icon,
+    .renew-icon {
+      cursor: pointer;
+    }
+    .notifications-icon img,
+    .renew-icon img {
+      width: 20px;
+      height: 20px;
+    }
+    /* Subtitle: Watchlist */
+    .header-subtitle {
+      text-align: left;
+      margin: 0 0 10px 0;
+    }
+    .header-subtitle h4 {
+      margin: 0;
+      padding-bottom: 0; /* No bright line under Watchlist title */
+      border-bottom: none;
+    }
+    /* Token list styling */
+    .token { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 8px; 
+      border-bottom: 1px solid #1a3a34;
+      transition: background-color 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .token:hover { 
+      background-color: #0a3a34; 
+      transform: scale(1.02);
+    }
+    .token-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      border-radius: 50%;
+    }
+    .token-info {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+    }
+    .token-link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+    }
+    .remove-btn { 
+      cursor: pointer; 
+      color: #97fce4; 
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.2s ease-in-out;
+      margin-left: 10px;
+      font-family: Arial, sans-serif;
+      font-weight: normal;
+      padding: 8px; /* Increased hitbox size */
+      margin: -8px -8px -8px 0; /* Adjust margin to expand clickable area */
+    }
+    .remove-btn:hover {
+      color: #6fd1b9;
+    }
+    .favourite-btn {
+      cursor: pointer;
+      color: #ffcc00;
+      font-size: 16px;
+      margin-right: 8px;
+      transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+      font-weight: normal;
+    }
+    .favourite-btn:hover {
+      color: #ffa500;
+    }
+    .favourite-btn.favourited {
+      transform: scale(1.2);
+    }
+    /* Inputs and selects use border-box for consistent sizing */
+    input, select { 
+      box-sizing: border-box;
+      width: 100%; 
+      padding: 5px; 
+      margin: 5px 0; 
+      background-color: #0a3a34; 
+      color: #ffffff; 
+      border: 1px solid #1a3a34;
+      border-radius: 5px;
+    }
+    button { 
+      width: 100%; 
+      padding: 8px; 
+      margin: 5px 0; 
+      background-color: #97fce4; 
+      color: #072723; 
+      border: none; 
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+      font-weight: normal;
+    }
+    button:hover { 
+      background-color: #6fd1b9;
+    }
+    /* Bold buttons for Add Token, Copy Referral Link, and Renew */
+    #addTokenBtn,
+    #copyReferralBtn,
+    #renewReferralBtn {
+      font-weight: bold;
+    }
+    /* Add Custom Token Section */
+    #tokenSection {
+      padding-top: 10px;
+    }
+    /* Error message styling */
+    #errorMessage {
+      color: #ff4444;
+      display: none;
+      margin: 5px 0;
+      font-size: 12px;
+    }
+    /* Referral Section */
+    #referralSection {
+      padding-top: 10px;
+      margin-top: 0; /* Removed extra margin */
+    }
+    /* Referral input: Full width */
+    #referralLink {
+      width: 100%;
+      padding: 5px;
+      font-size: 14px;
+      color: #97fce4;
+    }
+    /* Copy Referral Link button */
+    #copyReferralBtn {
+      margin-top: 5px;
+      padding: 8px;
+      background-color: #97fce4;
+      color: #072723;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    #copyReferralBtn:hover {
+      background-color: #6fd1b9;
+    }
+    /* Notifications bubble styling */
+    .notifications-bubble {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      width: 280px;
+      max-height: 300px;
+      background-color: rgba(7, 39, 35, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid #1a3a34;
+      border-radius: 10px;
+      overflow-y: auto;
+      padding: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 100;
+      cursor: move;
+    }
+    .bubble-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      cursor: move;
+    }
+    .bubble-header h4 {
+      margin: 0;
+    }
+    .close-bubble {
+      cursor: pointer;
+      font-size: 18px;
+      color: #ff4444;
+    }
+    .notifications-list {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .notification-item {
+      padding: 5px;
+      border-bottom: 1px solid #1a3a34;
+    }
+    .clear-notifications-btn {
+      width: 100%;
+      padding: 8px;
+      background-color: #ff4444;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    .clear-notifications-btn:hover {
+      background-color: #cc0000;
+    }
+    /* Price change colors */
+    .positive {
+      color: #00FF00; /* Vivid green for positive changes */
+    }
+    .negative {
+      color: #FF0000; /* Vivid red for negative changes */
+    }
+    /* Popup message styling */
+    #popupMessage {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #0a3a34;
+      color: #97fce4;
+      border: 1px solid #97fce4;
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: none;
+      z-index: 200;
+      opacity: 1;
+      transition: opacity 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <img src="logo.png" alt="Hyprice Logo" class="header-logo">
+    </div>
+    <div class="header-right">
+      <div id="renewReferralBtn" class="renew-icon">
+        <img src="renew-icon.png" alt="Renew" title="Renew Referral Code">
+      </div>
+      <div id="notificationsIcon" class="notifications-icon">
+        <img src="notification-icon-empty.png" alt="Notifications">
+      </div>
+    </div>
+  </div>
+  <!-- Subtitle: Watchlist -->
+  <div class="header-subtitle"><h4>Watchlist</h4></div>
+  
+  <!-- Token List -->
+  <div id="prices"></div>
+  
+  <!-- Add Custom Token Section -->
+  <h4 class="no-gap">Add Custom Token</h4>
+  <div id="tokenSection">
+    <input type="text" id="tokenName" placeholder="Token Name (e.g., HYPE)">
+    <input type="text" id="pairAddress" placeholder="Dexscreener Pair Address">
+    <div id="errorMessage"></div>
+    <button id="addTokenBtn" type="button">Add Token</button>
+  </div>
+  
+  <!-- Referral Section -->
+  <h4 class="no-gap">Referral</h4>
+  <div id="referralSection">
+    <input type="text" id="referralLink" readonly>
+    <button id="copyReferralBtn" type="button">Copy Referral Link</button>
+  </div>
+  
+  <!-- Notifications Bubble -->
+  <div id="notificationsBubble" class="notifications-bubble" style="display:none;">
+    <div id="bubbleHeader" class="bubble-header">
+      <h4>Notifications</h4>
+      <span id="closeBubble" class="close-bubble">✖</span>
+    </div>
+    <div class="notifications-list" id="notificationsList"></div>
+    <button class="clear-notifications-btn" id="clearNotificationsBtn" type="button">Clear Notifications</button>
+  </div>
+
+  <!-- Popup Message for "Copied." notification -->
+  <div id="popupMessage"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
